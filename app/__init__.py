@@ -7,3 +7,5 @@ from config import Config
 app = Flask(__name__)
 
 app.config.from_object(config)
+
+from app.auth import routes
