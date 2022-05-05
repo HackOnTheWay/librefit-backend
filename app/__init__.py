@@ -1,4 +1,4 @@
-from distutils.command.config import config
+from flask_jwt_extended import JWTManager,create_access_token
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 
@@ -12,6 +12,7 @@ app.config.from_object(Config)
 #database config
 db = SQLAlchemy(app)
 
-
+#jwt object
+jwt = JWTManager(app)
     
 from app.auth import routes
