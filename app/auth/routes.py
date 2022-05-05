@@ -15,6 +15,7 @@ from flask_jwt_extended import unset_jwt_cookies
 from flask_jwt_extended import get_jwt
 
 from flask import jsonify,request
+
 from werkzeug.security import generate_password_hash,check_password_hash
 
 app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(days=30)
@@ -38,20 +39,45 @@ def refresh_expiring_jwts(response):
 
 @app.route('/api/auth/login', methods = ['POST'])
 def login():
-    user_name='amar'
-    user_pass='38y2y'
-    user = Users.query.filter_by(user_name=user_name,user_pass=user_pass).first()
-    access_token = create_access_token(identity=user.user_id)
-    response = jsonify({"msg": "login successful"})
-    set_access_cookies(response, access_token)
-    return jsonify({ "token": access_token, "user_name": user.user_name , "msg": "login successful"})
+    
+    data = request.get_json()
+
+    user_name = data['user_name']
+    if user_name:
+        if '@' in user_name:
+            user = Users.query.filter_by(email_id=user_name).first()
+        else:
+            user = Users.query.filter_by(user_name=user_name).first()
+
+        if user is None:
+            return jsonify({'message': 'User not found'}), 401
+
+        user_pass = data['user_pass']
+
+        if check_password_hash(user.user_pass, user_pass):
+            access_token = create_access_token(identity=user.user_id)
+            response = jsonify({"msg": "login successful"})
+            set_access_cookies(response, access_token)
+            return jsonify({ "token": access_token, "user_name": user.user_name , "message": "login successful"})
+        else:
+            return jsonify({'message': 'Incorrect Password'}), 401
+    else:
+        return jsonify({'message': 'Username not provided'}), 401
+
+    
 
 @app.route('/api/auth/register', methods = ['POST'])
 def register():
     data = request.get_json()
     user_name = data['user_name']
-    user_pass = generate_password_hash(data['user_pass'])
+
+    
+
+    user_pass = data['user_pass']
     email_id = data['email_id']
+    if user_name is None or user_pass is None or email_id is None:
+            return jsonify({'message': 'fields cannot be empty'}), 401
+    user_pass = generate_password_hash(data['user_pass'])
     user = Users(user_name=user_name,user_pass=user_pass,email_id=email_id)
     db.session.add(user)
     db.session.commit()
@@ -74,3 +100,8 @@ def logout():
 def protected():
     return jsonify({"msg": "token expired"})
 
+@app.route("/api/auth/get_username", methods=['GET'])
+def get_username():
+    username = Users.query(Users.user_name)
+
+    return jsonify(username)

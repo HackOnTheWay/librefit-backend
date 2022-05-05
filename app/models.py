@@ -8,9 +8,9 @@ class Users(db.Model):
 
 class Awards(db.Model):
     award_id = db.Column(db.Integer, primary_key=True) 
-    award_name = db.Column(db.String(20), unique=True,foreign_key=True) 
+    award_name = db.Column(db.String(20), unique=True) 
 
 class Userawards(db.Model):
-    user_id = db.Column(db.Integer, foreign_key=True)
+    user_id = db.Column(db.Integer, foreign_key=True, primary_key=True)
     award_id = db.Column(db.Integer, foreign_key=True)
         
