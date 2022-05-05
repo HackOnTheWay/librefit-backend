@@ -2,27 +2,21 @@ from app import app
 from app.models import Users
 from app import db
 
-from app import jwt
+from flask_jwt_extended import JWTManager,create_access_token, get_jwt_identity,jwt_required
 
 from flask import jsonify,request
 from werkzeug.security import generate_password_hash,check_password_hash
 
+
+jwt = JWTManager(app)
+
 @app.route('/api/auth/login', methods = ['POST'])
 def login():
-    # user_id=1
-    # user_name = 'amar'
-    # user_pass='hello'
-    # email_id ='test@gmail.com'
-    # user = Users(user_id=user_id,user_name=user_name,user_pass=user_pass,email_id=email_id)
-    # db.session.add(user)
-    # db.session.commit()
-    if Users is None:
-        # the user was not found on the database
-        return jsonify({"msg": "Bad username or password"}), 401
-    
-    # create a new token with the user id inside
-    access_token = jwt.create_access_token(identity=Users.id)
-    return jsonify({ "token": access_token, "user_id": Users.id })
+    user_name='amar'
+    user_pass='38y2y'
+    user = Users.query.filter_by(user_name=user_name,user_pass=user_pass).first()
+    access_token = create_access_token(identity=user.user_id)
+    return jsonify({ "token": access_token, "user_name": user.user_name})
 
 @app.route('/api/auth/register', methods = ['POST'])
 def register():
