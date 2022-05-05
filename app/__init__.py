@@ -15,3 +15,4 @@ db = SQLAlchemy(app)
 
     
 from app.auth import routes
+from app.workout import routes

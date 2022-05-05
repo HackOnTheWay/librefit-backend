@@ -1,3 +1,4 @@
+from enum import unique
 from app import db
 
 class Users(db.Model):
@@ -17,3 +18,15 @@ class Userawards(db.Model):
     user_id = db.Column(db.Integer, foreign_key=True, primary_key=True)
     award_id = db.Column(db.Integer, foreign_key=True)
         
+class Workouts(db.Model):
+    w_id = db.Column(db.Integer, primary_key=True)
+    w_name = db.Column(db.String(20), unique=True)
+
+    def __repr__(self):
+        return self.w_name
+
+class Workoutuser(db.Model):
+    user_id = db.Column(db.Integer, foreign_key=True, primary_key=True)
+    w_id = db.Column(db.Integer, foreign_key=True)
+    duration = db.Column(db.Integer)
+    

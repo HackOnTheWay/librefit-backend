@@ -14,11 +14,11 @@ from flask_jwt_extended import set_access_cookies
 from flask_jwt_extended import unset_jwt_cookies
 from flask_jwt_extended import get_jwt
 
+
 from flask import jsonify,request
 
 from werkzeug.security import generate_password_hash,check_password_hash
 
-import json
 
 app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(days=30)
 jwt = JWTManager(app)
@@ -30,7 +30,7 @@ def refresh_expiring_jwts(response):
     try:
         exp_timestamp = get_jwt()["exp"]
         now = datetime.now(timezone.utc)
-        target_timestamp = datetime.timestamp(now + timedelta(seconds=10))
+        target_timestamp = datetime.timestamp(now + timedelta(minutes=3))
         if target_timestamp > exp_timestamp:
             access_token = create_access_token(identity=get_jwt_identity())
             set_access_cookies(response, access_token)
@@ -117,6 +117,6 @@ def protected():
 def get_username():
     username = Users.query.all()
 
-    user_dict = {str(index):str(usern) for index, usern in enumerate(username)}
+    user_dict = {str(index):str(usern) for index, usern in enumerate(username,1)}
 
     return jsonify(user_dict)
