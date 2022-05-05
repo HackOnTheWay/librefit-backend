@@ -9,7 +9,7 @@ from datetime import datetime
 
 
 
-from flask_jwt_extended import JWTManager,create_access_token, get_jwt_identity,jwt_required
+from flask_jwt_extended import JWTManager,create_access_token, get_jwt_identity,jwt_required, create_refresh_token
 from flask_jwt_extended import set_access_cookies
 from flask_jwt_extended import unset_jwt_cookies
 from flask_jwt_extended import get_jwt
@@ -56,9 +56,10 @@ def login():
 
         if check_password_hash(user.user_pass, user_pass):
             access_token = create_access_token(identity=user.user_id)
+            refresh_token = create_refresh_token(identity=user.user_id)
             response = jsonify({"msg": "login successful"})
             set_access_cookies(response, access_token)
-            return jsonify({ "token": access_token, "user_name": user.user_name , "message": "login successful"})
+            return jsonify({ "access-token": access_token, "refresh-token": refresh_token})
         else:
             return jsonify({'message': 'Incorrect Password'}), 401
     else:
@@ -71,10 +72,20 @@ def register():
     data = request.get_json()
     user_name = data['user_name']
 
-    
+    user_name_exists = Users.query.filter_by(user_name=user_name).first()
+
+    if user_name_exists is not None:
+        return jsonify({'message': 'Username already exists'}), 401
+
+    email_id = data['email_id']
+
+    email_id_exists = Users.query.filter_by(email_id=email_id).first()
+
+    if email_id_exists is not None:
+        return jsonify({'message': 'Email already exists'}), 401
 
     user_pass = data['user_pass']
-    email_id = data['email_id']
+    
     if user_name is None or user_pass is None or email_id is None:
             return jsonify({'message': 'fields cannot be empty'}), 401
     user_pass = generate_password_hash(data['user_pass'])
@@ -102,6 +113,6 @@ def protected():
 
 @app.route("/api/auth/get_username", methods=['GET'])
 def get_username():
-    username = Users.query(Users.user_name)
+    username = Users.query.filter().all()
 
     return jsonify(username)
