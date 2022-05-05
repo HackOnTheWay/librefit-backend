@@ -21,9 +21,9 @@ def login():
         return jsonify({"msg": "Bad username or password"}), 401
     
     # create a new token with the user id inside
-    access_token = create_access_token(identity=Users.id)
+    access_token = jwt.create_access_token(identity=Users.id)
     return jsonify({ "token": access_token, "user_id": Users.id })
-    # return jsonify({'msg': 'Login Route'})   
+
 @app.route('/api/auth/register', methods = ['POST'])
 def register():
     data = request.get_json()

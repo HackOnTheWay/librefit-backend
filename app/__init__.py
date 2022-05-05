@@ -1,4 +1,4 @@
-from flask_jwt_extended import JWTManager,create_access_token
+from flask_jwt_extended import JWTManager,create_access_token, get_jwt_identity
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 
