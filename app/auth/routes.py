@@ -34,6 +34,7 @@ def refresh_expiring_jwts(response):
         if target_timestamp > exp_timestamp:
             access_token = create_access_token(identity=get_jwt_identity())
             set_access_cookies(response, access_token)
+
         return response
     except (RuntimeError, KeyError):
         return response
@@ -103,6 +104,11 @@ def forgot_password():
 
 @app.route("/api/auth/logout", methods=["POST"])
 def logout():
+    data = request.get_json()
+    user_name = data['user_name']
+    user = Users.query.filter_by(user_name=user_name).first()
+    user.last_seen = datetime.now()
+    db.session.commit()
     response = jsonify({"msg": "logout successful"})
     unset_jwt_cookies(response)
     return response
@@ -120,3 +126,10 @@ def get_username():
     user_dict = {str(index):str(usern) for index, usern in enumerate(username)}
 
     return jsonify(user_dict)
+
+# @app.route("/api/auth/awards", )
+# day = user.last_seen - datetime.now()
+#     frequency = day.days
+#     if frequency == 1 :
+#         consistency +=1 
+#         user.consistency = consistency
