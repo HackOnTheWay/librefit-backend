@@ -18,6 +18,8 @@ from flask import jsonify,request
 
 from werkzeug.security import generate_password_hash,check_password_hash
 
+import json
+
 app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(days=30)
 jwt = JWTManager(app)
 
@@ -113,6 +115,8 @@ def protected():
 
 @app.route("/api/auth/get_username", methods=['GET'])
 def get_username():
-    username = Users.query.filter().all()
+    username = Users.query.all()
 
-    return jsonify(username)
+    user_dict = {str(index):str(usern) for index, usern in enumerate(username)}
+
+    return jsonify(user_dict)

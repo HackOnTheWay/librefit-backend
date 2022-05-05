@@ -6,6 +6,9 @@ class Users(db.Model):
     user_pass = db.Column(db.String(20), unique=True, nullable=False)
     email_id = db.Column(db.String(20), unique=True, nullable=False)
 
+    def __repr__(self):
+        return self.user_name
+
 class Awards(db.Model):
     award_id = db.Column(db.Integer, primary_key=True) 
     award_name = db.Column(db.String(20), unique=True) 
