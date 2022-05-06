@@ -21,7 +21,6 @@ from flask import jsonify, request
 
 from werkzeug.security import generate_password_hash, check_password_hash
 
-
 app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(days=30)
 jwt = JWTManager(app)
 
@@ -32,6 +31,8 @@ def user_lookup_callback(_jwt_header, jwt_data):
     return Users.query.filter_by(user_id=identity).one_or_none()
 
 # refreshing token implementation
+
+
 @app.after_request
 def refresh_expiring_jwts(response):
     try:
@@ -114,7 +115,7 @@ def logout():
     response = jsonify({"msg": "logout successful"})
     if current_user.last_seen is None:
         user = Users.query.filter_by(user_id=current_user.user_id).first()
-        user.last_seen=datetime.now()
+        user.last_seen = datetime.now()
         db.session.commit()
     else:
         frequency = datetime.now - user.last_seen
@@ -140,4 +141,22 @@ def get_username():
     user_dict = {str(index): str(usern)
                  for index, usern in enumerate(username, 1)}
 
+    return jsonify(user_dict)
+
+
+@app.route('/api/get_user', methods=['GET'])
+@jwt_required()
+def get_user():
+    user = Users.query.filter_by(user_id=current_user.user_id).first()
+
+    user_dict = {'user_id': user.user_id,
+                 'last_seen': user.last_seen,
+                 'profile_pic': user.profile_pic,
+                 'email_id': user.email_id,
+                 'user_name': user.user_name,
+                 'streaks': user.streaks
+                 }
+
+    if user is None:
+        return jsonify({'message': 'User does not exist'}), 401
     return jsonify(user_dict)

@@ -1,6 +1,8 @@
 from app import db
 
+from dataclasses import dataclass
 
+@dataclass
 class Users(db.Model):
     user_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     user_name = db.Column(db.String(20), unique=True, nullable=False)
