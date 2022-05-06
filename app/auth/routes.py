@@ -113,8 +113,8 @@ def forgot_password():
 @jwt_required()
 def logout():
     response = jsonify({"msg": "logout successful"})
+    user = Users.query.filter_by(user_id=current_user.user_id).first()
     if current_user.last_seen is None:
-        user = Users.query.filter_by(user_id=current_user.user_id).first()
         user.last_seen = datetime.now()
         db.session.commit()
     else:
