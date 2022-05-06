@@ -121,6 +121,7 @@ def logout():
         if frequency == 1:
             streak += 1
             user = Users(streak=streak)
+            db.session.add(user)
             db.session.commit()
     unset_jwt_cookies(response)
     return response

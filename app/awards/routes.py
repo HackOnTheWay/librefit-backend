@@ -1,3 +1,4 @@
+from email import message
 from app import app, awards
 
 from app import db
@@ -24,4 +25,6 @@ def send_award():
         award_user = Userawards(user_id=current_user.user_id, award_id=award_id)
         db.session.add(award_user)
         db.session.commit()
-    return jsonify({ "message" : 'user badge awarded' })
+        return jsonify({ "message" : 'user badge awarded' })
+    else:
+        return jsonify({"message" :'badge requirements not met'}) 
