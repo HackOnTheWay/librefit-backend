@@ -36,8 +36,6 @@ def end_workouts():
 
     user = current_user.user_id
 
-    print(user)
-
     c_user = Users.query.filter_by(user_id=user).first()
 
     if c_user is None:
@@ -46,9 +44,7 @@ def end_workouts():
     workout_id = data['workout_id']
     duration = data['duration']
 
-    workout_user = Workoutuser(
-        user_id=user, w_id=workout_id, duration=duration)
-
+    workout_user = Workoutuser(user_id=user, w_id=workout_id, duration=duration)
     db.session.add(workout_user)
     db.session.commit()
 
